@@ -11,7 +11,10 @@ The parsing basically consists of a relevancy evaluation at one's will so that a
 ---
 
 ## Architecture
-![Alt text](Scraper.png)
+<p align="center">
+<img src="Scraper.png">
+</p>
+
 1. A cronjob triggerred Azure Function orchestrates the whole ordeal by starting the container instance via Powershell *(IaC)*
 2. The container is created with a mounted Fileshare to enable persistence of data 
 3. The Container Instance scrapes freelance.de in aforementioned manner, appending the new jobs to results.csv and updating the watermark.
