@@ -34,8 +34,8 @@ The parsing basically consists of a relevancy evaluation at one's will so that a
 
 1. Enter your data into `assign-rbac.ps1` and `run.ps1`
 2. Run `assign-rbac.ps1`
-3. Replace requirements.psd1 as well as run.ps1 with the files from this Github
-4. Done
+3. Replace `requirements.psd1` as well as `run.ps1` of your Azure Function with the files from this function folder
+4. Done!
 
 ### Script & Storage Configuration
 1. Enter your data into `config.json`
