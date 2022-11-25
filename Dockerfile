@@ -1,6 +1,5 @@
 FROM selenium/standalone-chrome
 
-
 USER root
 RUN apt-get update && apt-get install python3-distutils -y && \
       wget https://bootstrap.pypa.io/get-pip.py && \
