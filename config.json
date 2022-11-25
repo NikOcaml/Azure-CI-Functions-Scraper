@@ -1,0 +1,6 @@
+{"csv_path": "path/to/the/csv/Freelance_{}.csv",
+"watermark_path":"path/to/the/watermark//watermark.json",
+"sendgrid_api_key": "your sendgrid api key",
+"from_email": "from which email adress the job notification email gets send", "to_email":"to which email adress the job notification email gets send",
+"search_term": "the keywords you use for the job search",
+"acc": {"name":"freelance.de account email", "pw": "freelance.de account password"}}
