@@ -11,11 +11,10 @@ from sendgrid.helpers.mail import Mail
 
 config=json.load(open("config.json"))
 
-current_csv=config["csv_path"].format(dt.now().strftime('%b'))
-current_wm=config["watermark_path"]
+csv_path=config["csv_path"].format(dt.now().strftime('%b'))
+watermark_path=config["watermark_path"]
 sendgrid_api_key=config["sendgrid_api_key"]
 fl_acc=config["acc"]
-search_term=config["search_term"]
 
 dt_web_format="%d.%m.%Y %H:%M"
 dt_csv_format="%Y-%m-%d %H:%M:%S"
@@ -29,11 +28,11 @@ def cookie_ok(driver):
     return
 
 def check_watermark():
-    if not os.path.isfile(current_csv):
-        with open(current_csv, 'a', newline="") as f:
+    if not os.path.isfile(csv_path):
+        with open(csv_path, 'a', newline="") as f:
             csv.writer(f).writerows([cols])
     try:
-        watermark=json.load(open(current_wm))
+        watermark=json.load(open(watermark_path))
         watermark["last_job"]=dt.strptime(watermark["last_job"], dt_web_format)
         watermark["last_email"]=dt.strptime(watermark["last_email"], dt_web_format)
     except:
@@ -57,7 +56,7 @@ def logging_in(driver):
 def search(driver):
     sleep(2)
     search=driver.find_element(by=By.CSS_SELECTOR, value="input#search-text")
-    search.send_keys(f'{search_term}\n')
+    search.send_keys('Data Engineer Azure Spark\n')
     sleep(3)
     driver.find_element(by=By.CSS_SELECTOR, value="button[title='Sortieren nach Relevanz']").click()
     driver.find_element(by=By.CSS_SELECTOR, value="div#filter8 li[data-original-index='1']").click()
@@ -79,12 +78,11 @@ def parse_projects(project_list, watermark):
         url=anchor.get_attribute("href")
         title=anchor.text
         comp=project.find_element(by=By.CSS_SELECTOR, value="span.company-name").text
-        kw_counts=re.findall(r'\b\d+\b', \
+        data_count, engineer_count, azure_count, spark_count=re.findall(r'\b\d+\b',
         project.find_element(by=By.CSS_SELECTOR, value=f"div#word_matches_{id}").text)
-        row=[id, title, comp, kw_counts, url, time]
+        row=[id, title, comp, data_count, engineer_count, azure_count, spark_count, url, time]
         projects.append(row)
-        #Your condition for email worthy jobs based on e.g. keyword occurences
-        if (kw_counts):
+        if (int(data_count)*int(engineer_count) > 0) and ((int(spark_count) + int(azure_count)) > 2):
             email_projects.append(row)
     return projects, email_projects, no_break
 
@@ -104,7 +102,7 @@ def next_page(driver, no_break, watermark, projects, email_projects):
 def send_mail(email_projects, watermark):
     if email_projects==[]:
         return
-    watermark["last_email"]=dt.strftime(email_projects[0][-1], dt_web_format)
+    watermark["last_email"]=email_projects[0][-1]
     email_body=""
     for row in email_projects:
         email_body=email_body+f'<h1><a href={row[-2]}>{row[1]}</a>\n</h1><h3>{row[2]}</h3>    Azure: {row[-4]}   Spark: {row[-3]} \n'
@@ -121,16 +119,16 @@ def send_mail(email_projects, watermark):
 
 def serialize(projects, watermark):
     if projects!=[]:
-        with open(current_wm, 'w', newline="") as c_wm:
-            json.dump({"last_job": dt.strftime(projects[0][-1], dt_web_format),
-                "last_email": watermark["last_email"], "last_run": dt.strftime(dt.now(), dt_web_format)}, c_wm)
-        with open(current_csv, newline='') as c_csv:
+        with open(watermark_path, 'w', newline="") as c_wm:
+            json.dump({"last_job": dt.strftime(projects[0][-1], dt_web_format), \
+            "last_email": dt.strftime(watermark["last_email"], dt_web_format), "last_run": dt.strftime(dt.now(), dt_web_format)}, c_wm)
+        with open(csv_path, newline='') as c_csv:
             curr_csv_list=list(csv.reader(c_csv))[1:]
-        with open(current_csv, "w", newline='') as c_csv:
+        with open(csv_path, "w", newline='') as c_csv:
             csv.writer(c_csv).writerows([cols]+projects+curr_csv_list)
     else:
-        with open(current_wm, 'w', newline="") as c_wm:
-            json.dump({"last_job": dt.strftime(watermark["last_job"], dt_web_format),
+        with open(watermark_path, 'w', newline="") as c_wm:
+            json.dump({"last_job": dt.strftime(watermark["last_job"], dt_web_format), \
             "last_email": dt.strftime(watermark["last_email"], dt_web_format), "last_run": dt.strftime(dt.now(), dt_web_format)}, c_wm)
 container_chrome_options = webdriver.ChromeOptions()
 container_chrome_options.add_argument('--no-sandbox')

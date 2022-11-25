@@ -45,3 +45,8 @@ The parsing basically consists of a relevancy evaluation at one's will so that a
 That's it! The container instance uses an image based on the dockerfile in this directory and it should automatically access `scraper.py` and `config.py`. The function can be of any kind, not only time triggerred.
 
 ---
+
+## ToDo:
+- Easier search term change
+- Visualization
+- Better E-Mail Template
