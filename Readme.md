@@ -12,7 +12,7 @@ The parsing basically consists of a relevancy evaluation at one's will so that a
 
 ## Architecture
 <p align="center">
-<img src="Scraper.png">
+<img src="Scraper.svg">
 </p>
 
 1. A cronjob triggerred Azure Function orchestrates the whole ordeal by starting the container instance via Powershell *(IaC)*
