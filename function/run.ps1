@@ -5,13 +5,11 @@ $mount = New-AzContainerInstanceVolumeMountObject -MountPath "/SeleniumApp" -Nam
 $container = New-AzContainerInstanceObject -Name "Name of the container instance" -Image eth11/sel-chrome-local:v01 -VolumeMount $mount
 New-AzContainerGroup -ResourceGroupName "Name of the resource group" -Name "Name of the container group" -Location germanywestcentral -Container $container -RestartPolicy "Never" -Volume $volume
 
-#Since the cronjob doesn't trigger on the weekend, the first scraping of the week takes a bit longer
-$Calendar = Get-Date
-If ($Calendar.DayOfWeek.value__ -eq '1' -And $Calendar.Hour -lt '9') {
-Start-Sleep -Seconds 55
-}
-Else {
-Start-Sleep -Seconds 30
+# Wait for the updated watermark for a maximum of 5*15 seconds
+$iterator=1
+while ((Get-AzStorageFile -ShareName "The Azure Fileshare name" -path "data/watermark.json").LastModified -lt $now -And $iterator -lt 6) {
+    $iterator++
+    Start-Sleep -Seconds 15
 }
 
 Remove-AzContainerGroup -Name "Name of the container group" -ResourceGroupName "Name of the resource group"
