@@ -1,9 +1,8 @@
-# About (Summary)
+# About
 
-A webscraper for freelance.de running on a serverless Azure architecture written in python using Selenium and Sendgrid. It is intended to be run in a Docker container on Azure Container Instances and orchestrated via an Azure Function. The scraper simply opens freelance.de, logs in, executes a search for the predefined search terms, parses & appends the new results (which can span multiple pages) and lastly sends an email of the new relevant job if appropriate.
+A Python webscraper for freelance.de using Selenium and Sendgrid intended to be run on a serverless Azure architecture - consisting  of an Azure Container Instance for Computation / Transformation and an Azure Function in Powershell for Orchestration/ Infrastacture-as-Code. The scraper simply opens freelance.de, logs in, executes a search for the predefined search terms, parses & appends the new results (which can span multiple pages) and lastly sends an email of the new relevant job if appropriate.
 
-
-The parsing basically consists of a relevancy evaluation at one's will so that a subset of highly appropriate new results (job postings) are subsequently sent via email to the recipient. Execution (8 times a day from Monday till Friday) is less than 5€/month, only possible due to the serverless nature. Of that, more than 90% are storage costs (unfortunately, only an Azure File Share can be mounted to a Container Instance. Its tx costs are relatively high). In detail, the cloud architecture looks like following.
+Execution 8 times a day from Monday till Friday is less than 5€/month, only possible due to the serverless nature. Of that, more than 90% are storage costs (unfortunately, only an Azure File Share can be mounted to a Container Instance. Its tx costs are relatively high).
 
 ---
 
@@ -29,9 +28,9 @@ The parsing basically consists of a relevancy evaluation at one's will so that a
 
 ### Function App Deployment
 
-1. Configure `assign-rbac.ps1` and `run.ps1` (meaning enter your personalized data)
+1. Configure `assign-rbac.ps1`, `profile.ps1` and `run.ps1` (meaning enter your personalized data)
 2. Run `assign-rbac.ps1`
-3. Replace `requirements.psd1` as well as `run.ps1` of your Azure Function with the files from this function folder
+3. Replace the contents of `requirements.psd1`, `profile.ps1` as well as `run.ps1` of your Azure Function with the files from this function folder
 4. Done!
 
 ### Script & Storage Configuration
@@ -39,7 +38,9 @@ The parsing basically consists of a relevancy evaluation at one's will so that a
 2. Upload `scraper.py` and `config.json` to the File Share
 3. Done!
 
-That's it! The container instance uses an image based on the dockerfile in this directory and it should automatically access `scraper.py` and `config.py` from your File Share. The function can be of any kind, not only time triggerred.
+That's it! The container instance uses a Dockerhub image based on the dockerfile in this directory and it should automatically access `scraper.py` and `config.py` from your File Share. The function can be of any kind, not only time triggerred.
 
 ### Relevancy Evaluation
+
+The parsing basically consists of a relevancy evaluation at one's will so that a subset of highly appropriate new results (job postings) are subsequently sent via email to the recipient. 
 Whether a new job gets send via email depends on the relevancy condition. Right now it is simply a function of search word occurence counts - but that works satisfactory: Word1 and Word2 must occur in the job description; word3 and word4's occurrences must add up to at least 3.
