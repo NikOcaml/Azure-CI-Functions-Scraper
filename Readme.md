@@ -1,6 +1,6 @@
 # About
 
-A Python webscraper for freelance.de using Selenium and Sendgrid intended to be run on a serverless Azure architecture - consisting  of an Azure Container Instance for Computation / Transformation and an Azure Function in Powershell for Orchestration/ Infrastacture-as-Code. The scraper simply opens freelance.de, logs in, executes a search for the predefined search terms, parses & appends the new results (which can span multiple pages) and lastly sends an email of the new relevant job if appropriate.
+A Python webscraper for freelance.de using Selenium and Sendgrid intended to be run on a serverless Azure architecture - consisting  of an Azure Container Instance for Computation / Extraction & Transformation and an Azure Function in Powershell for Orchestration/ Infrastacture-as-Code. The scraper simply opens freelance.de, logs in, executes a search for the predefined search terms, parses & appends the new results (which can span multiple pages) and lastly sends an email of the new relevant job if appropriate.
 
 Execution 8 times a day from Monday till Friday is less than 5€/month, only possible due to the serverless nature. Of that, more than 90% are storage costs (unfortunately, only an Azure File Share can be mounted to a Container Instance. Its tx costs are relatively high).
 
@@ -44,3 +44,7 @@ That's it! The container instance uses a Dockerhub image based on the dockerfile
 
 The parsing basically consists of a relevancy evaluation at one's will so that a subset of highly appropriate new results (job postings) are subsequently sent via email to the recipient. 
 Whether a new job gets send via email depends on the relevancy condition. Right now it is simply a function of search word occurence counts - but that works satisfactory: Word1 and Word2 must occur in the job description; word3 and word4's occurrences must add up to at least 3.
+
+### To Do:
+- Make Relevancy condition easily updateable
+- Email with ACI log if Container State does not equal Succeeded after Termination
